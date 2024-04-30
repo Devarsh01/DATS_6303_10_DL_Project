@@ -91,30 +91,53 @@ model.summary()
 model.fit(input_sequences, target_sequences, epochs=50, batch_size=32)
 
 #%%
-def generate_music(model, seed_sequence, length=10, steps_per_second=5):
-    """Generate music from a seed sequence aiming for a total duration."""
-    # Ensure the seed sequence is of the correct length
+# def generate_music(model, seed_sequence, length=10, steps_per_second=5):
+#     """Generate music from a seed sequence aiming for a total duration."""
+#     # Ensure the seed sequence is of the correct length
+#
+#     generated_sequence = np.copy(seed_sequence)  # Copy to avoid modifying the original seed
+#     total_steps = length * steps_per_second  # Total steps needed for desired duration
+#     # print(f"Total steps to generate: {total_steps}")
+#
+#     for _ in range(total_steps):
+#         # Predict the next step using the last 'seq_length' elements in the generated_sequence
+#         prediction = model.predict(np.expand_dims(generated_sequence[-seq_length:], axis=0))[0]
+#         # print('Prediction vector:', prediction)
+#
+#         # Select the pitch with the highest probability
+#         predicted_pitch = np.argmax(prediction)
+#         # print('Predicted pitch:', predicted_pitch)
+#
+#         # Normalize the predicted pitch and reshape for stacking
+#         # normalized_pitch = np.array([[predicted_pitch / 127]])
+#
+#         # Append the normalized pitch to the generated sequence
+#         generated_sequence = np.vstack([generated_sequence, predicted_pitch])
+#         # print('Updated generated sequence:', generated_sequence)
+#     print("This is damnn great generation!!!", generated_sequence[-30:])
+#     return generated_sequence
 
+def generate_music(model, seed_sequence, length=10, steps_per_second=5, temperature=1):
+    """Generate music from a seed sequence aiming for a total duration using a temperature parameter."""
     generated_sequence = np.copy(seed_sequence)  # Copy to avoid modifying the original seed
     total_steps = length * steps_per_second  # Total steps needed for desired duration
-    # print(f"Total steps to generate: {total_steps}")
 
     for _ in range(total_steps):
         # Predict the next step using the last 'seq_length' elements in the generated_sequence
         prediction = model.predict(np.expand_dims(generated_sequence[-seq_length:], axis=0))[0]
-        # print('Prediction vector:', prediction)
 
-        # Select the pitch with the highest probability
-        predicted_pitch = np.argmax(prediction)
-        # print('Predicted pitch:', predicted_pitch)
+        # Apply temperature to the prediction probabilities and normalize
+        prediction = np.log(prediction + 1e-8) / temperature  # Smoothing and apply temperature
+        exp_prediction = np.exp(prediction)
+        prediction = exp_prediction / np.sum(exp_prediction)
 
-        # Normalize the predicted pitch and reshape for stacking
-        # normalized_pitch = np.array([[predicted_pitch / 127]])
+        # Sample an index from the probability array
+        predicted_pitch = np.random.choice(len(prediction), p=prediction)
 
-        # Append the normalized pitch to the generated sequence
+        # Append the predicted pitch to the generated sequence
         generated_sequence = np.vstack([generated_sequence, predicted_pitch])
-        # print('Updated generated sequence:', generated_sequence)
-    print("This is damnn great generation!!!", generated_sequence[-30:])
+
+    print("Generated sequence with variability:", generated_sequence[-30:])
     return generated_sequence
 
 
@@ -158,7 +181,7 @@ def generated_to_midi(generated_sequence, fs=100, total_duration=6):
 
 # Assuming you have a trained model and a seed sequence
 # seed_pitches = np.array([60, 62, 64, 65, 67, 61, 45, 55, 47, 68])  # Example MIDI pitches
-seed=1
+seed=1000
 seed_pitches = input_sequences[seed]
 # Normalize the pitches and reshape for model input
 # Normalize by dividing by the maximum MIDI pitch value (127)
@@ -168,7 +191,7 @@ seed_sequence = (seed_pitches).reshape(-1, 1)  # Reshape to (n, 1)
 # Call the generate_music function with the reshaped and normalized seed sequence
 generated_music = generate_music(model, seed_sequence, length=20, steps_per_second=2)   # Generate enough steps
 generated_music_midi = generated_to_midi(generated_music, total_duration=10)
-generated_music_midi.write('/home/ubuntu/Devarsh_DL/Project/gen_music/output_midi_file_MGen_pred.mid')
+generated_music_midi.write('/home/ubuntu/Devarsh_DL/Project/gen_music/output_midi_file_temp_pred_2.mid')
 
 def actual_song(total_duration):
     full_sequence=seed_sequence.copy()
@@ -181,10 +204,5 @@ full_sequence=actual_song(30)
 #%%
 
 generated_music_midi = generated_to_midi(full_sequence, total_duration=10)
-generated_music_midi.write('/home/ubuntu/Devarsh_DL/Project/gen_music/output_midi_file_MGen_act.mid')
-
-
-
-
-
+generated_music_midi.write('/home/ubuntu/Devarsh_DL/Project/gen_music/output_midi_file_temp_act.mid')
 
