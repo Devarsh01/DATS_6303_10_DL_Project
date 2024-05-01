@@ -83,7 +83,6 @@ def generate_music(model, seed_sequence, length=10, steps_per_second=5, temperat
     st.write("Generated sequence with variability:", generated_sequence[-30:])
     return generated_sequence
 
-
 def generated_to_midi(generated_sequence, fs=100, total_duration=6):
     """Convert generated sequence to MIDI file, ensuring all notes are audible."""
     pm = pretty_midi.PrettyMIDI()
@@ -122,32 +121,27 @@ def generated_to_midi(generated_sequence, fs=100, total_duration=6):
     return pm
 
 
-def midi_to_wav(midi_data, output_path):
-    # Synthesize audio from the MIDI data
-    audio_data = midi_data.synthesize()
-
-    # Write audio data to a WAV file
-    wavfile.write(output_path, 44100, audio_data.astype('int16'))
-
-    return output_path
+def midi_to_wav(midi_path, wav_path):
+    fs = FluidSynth()
+    fs.midi_to_audio(midi_path, wav_path)
 
 # Define the directory options and their corresponding model paths
 composer_models = {
-    'albeniz': '/path/to/albeniz_model.h5',
+    'albeniz': '/home/ubuntu/sai/models/albeniz.h5',
     'bach': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/model_bach.h5',
     'balakirew': '/path/to/balakirew_model.h5'
 }
 
 # Define the directory options for training and prediction MIDI files
 training_midi_directory_options = {
-    'albeniz': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/albeniz',
+    'albeniz': '/home/ubuntu/sai/Data Sources/albeniz',
     'bach': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/bach',
     'balakir': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/balakir'
 }
 
 prediction_midi_directory_options = {
-    'albeniz': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/albeniz',
-    'bach': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/bach',
+    'albeniz': '/home/ubuntu/sai/Data Sources/albeniz',
+    'bach': '/home/ubuntu/sai/Data Sources/bach',
     'balakir': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/balakir'
 }
 
@@ -202,10 +196,20 @@ if st.button('Generate Music'):
     generated_music = generate_music(training_model, seed_sequence)
 
     # Convert generated sequence to MIDI
-    generated_music_midi = generated_to_midi(generated_music)
+    generated_music_midi = generated_to_midi(generated_music,total_duration=15)
     #output_path = '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/generated_music.mid'
     #generated_music_midi.write(output_path)
     #Save the generated MIDI to a temporary file
-    output_path = "/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/output.wav"
+    def save_midi_to_tempfile(midi_data):
+        temp_path = "temp.mid"
+        midi_data.write(temp_path)
+        return temp_path
 
-    midi_to_wav(generated_music_midi, output_path)
+
+    temp_midi_path = save_midi_to_tempfile(generated_music_midi)
+    output_path = "output.wav"
+    midi_to_wav(temp_midi_path, output_path)
+
+    # Display the WAV audio in Streamlit
+    audio_bytes = open(output_path, 'rb').read()
+    st.audio(audio_bytes, format='audio/wav')
