@@ -12,6 +12,9 @@ import subprocess
 from pydub import AudioSegment
 from midi2audio import FluidSynth
 import mido
+from scipy import signal
+import tempfile
+
 
 # Check for GPU availability
 if tf.config.experimental.list_physical_devices('GPU'):
@@ -118,17 +121,15 @@ def generated_to_midi(generated_sequence, fs=100, total_duration=6):
     print("The generated MIDI")
     return pm
 
-def midi_to_audio(midi_data, output_path='output.wav'):
-    # Write the MIDI data to a temporary file
-    temp_midi = 'temp.mid'
-    with open(temp_midi, 'wb') as midi_file:
-        midi_file.write(midi_data.getvalue())
 
-    # Convert MIDI to WAV using FluidSynth
-    subprocess.run(['fluidsynth', '-F', output_path, '-r', '44100', '-g', '1.0', soundfont_path, temp_midi])
+def midi_to_wav(midi_data, output_path):
+    # Synthesize audio from the MIDI data
+    audio_data = midi_data.synthesize()
 
-    # Load the WAV file for further use (optional)
-    return AudioSegment.from_wav(output_path)
+    # Write audio data to a WAV file
+    wavfile.write(output_path, 44100, audio_data.astype('int16'))
+
+    return output_path
 
 # Define the directory options and their corresponding model paths
 composer_models = {
@@ -202,10 +203,9 @@ if st.button('Generate Music'):
 
     # Convert generated sequence to MIDI
     generated_music_midi = generated_to_midi(generated_music)
+    #output_path = '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/generated_music.mid'
+    #generated_music_midi.write(output_path)
+    #Save the generated MIDI to a temporary file
+    output_path = "/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/output.wav"
 
-    # Save the generated MIDI to a temporary file
-    with io.BytesIO() as buffer:
-        generated_music_midi.write(buffer)
-        buffer.seek(0)
-        audio = midi_to_audio(buffer)
-        st.audio(audio.raw_data, format='audio/wav')
+    midi_to_wav(generated_music_midi, output_path)
