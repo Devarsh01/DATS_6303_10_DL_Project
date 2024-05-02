@@ -101,19 +101,18 @@ def build_model(seq_length, vocab_size, embedding_dim):
     # Embedding layer: Converts input sequence of token indices to sequences of vectors
     x = Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=seq_length)(inputs)
 
-    # LSTM layer: You can stack more LSTM layers or adjust the number of units
-    x = LSTM(units=256, return_sequences=True)(x)  # return_sequences=True if next layer is also RNN
+    x = LSTM(units=256, return_sequences=True)(x)  # return_sequences=True since next layer is also RNN
     x = LSTM(units=256)(x)  # Last LSTM layer does not return sequences
 
     # Output layer: Linear layer (Dense) with 'vocab_size' units to predict the next pitch
-    outputs = Dense(vocab_size, activation='softmax')(x)  # Using softmax for output distribution
+    outputs = Dense(vocab_size, activation='softmax')(x)  # Using softmax for the output distribution(temperature implements a weighted sampling from this)
 
     # Create and compile model
     model = Model(inputs=inputs, outputs=outputs)
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
-#Build model duration
+#Building model for duration. Same structure as previous
 
 def build_model_duration(seq_length,vocab_size, embedding_dim):
     inputs = Input(shape=(seq_length,))
@@ -121,8 +120,7 @@ def build_model_duration(seq_length,vocab_size, embedding_dim):
     # Embedding layer: Converts input sequence of token indices to sequences of vectors
     x = Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=seq_length)(inputs)
 
-    # LSTM layer: You can stack more LSTM layers or adjust the number of units
-    x = LSTM(units=256, return_sequences=True)(x)  # return_sequences=True if next layer is also RNN
+    x = LSTM(units=256, return_sequences=True)(x)  
     x = LSTM(units=256)(x)  # Last LSTM layer does not return sequences
 
     # Output layer: Linear layer (Dense) with 'vocab_size' units to predict the next pitch
@@ -141,7 +139,7 @@ directory = 'Data Sources/bach/'
 
 seq_length = 30  # Length of the input sequences
 vocab_size = 128  # Number of unique pitches (for MIDI, typically 128)
-embedding_dim = 100 # Define the length of sequences for input and target
+embedding_dim = 100 # Defining the dimension for the embedding layer
 sequences = load_midi_details(directory)
 input_sequences, target_sequences,input_sequences_duration,target_sequences_duration = create_input_target_sequences(sequences, seq_length)
 
@@ -267,8 +265,6 @@ def generated_to_midi(generated_music, generated_durations, tempo=120):
 #%%
 seed=0
 seed_pitches = input_sequences[seed]
-# Normalize the pitches and reshape for model input
-# Normalize by dividing by the maximum MIDI pitch value (127)
 # Reshape to match expected model input shape (n, 1)
 seed_sequence = (seed_pitches).reshape(-1, 1)  # Reshape to (n, 1)
 
@@ -277,9 +273,6 @@ generated_music = generate_music(model, seed_sequence, length=40, steps_per_seco
 
 
 seed_durations = input_sequences_duration[seed]
-# Normalize the pitches and reshape for model input
-# Normalize by dividing by the maximum MIDI pitch value (127)
-# Reshape to match expected model input shape (n, 1)
 seed_sequence = (seed_durations).reshape(-1, 1)  # Reshape to (n, 1)
 
 generated_music_duration=generate_durations(model_duration, seed_sequence, length=40, steps_per_second=2,temperature=0.5)   # Generate enough steps
