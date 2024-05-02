@@ -1,0 +1,7 @@
+pretty_midi
+streamlit
+fluidsynth
+scipy
+pydub
+midi2audio
+mido
