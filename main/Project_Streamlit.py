@@ -14,15 +14,14 @@ from midi2audio import FluidSynth
 import mido
 from scipy import signal
 import tempfile
-bg_image = "/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/piano.webp"
 
-#st.image(bg_image, use_column_width=True)
+root_path ="/home/ubuntu/sai/"
+models_path = root_path + "models/"
+data_path = root_path + "Data Sources/"
+
+
+bg_image = root_path +"piano.webp"
 st.image(bg_image, use_column_width=True, width="100%")
-# # Check for GPU availability
-# if tf.config.experimental.list_physical_devices('GPU'):
-#     st.write("Using GPU")
-# else:
-#     st.write("Using CPU")
 
 # Set the background image as the page background
 st.markdown(
@@ -114,7 +113,7 @@ def generate_music(model, seed_sequence, length=10, steps_per_second=5, temperat
         # Append the predicted pitch to the generated sequence
         generated_sequence = np.vstack([generated_sequence, predicted_pitch])
 
-    #st.write("Generated sequence with variability:", generated_sequence[-30:])
+    st.write("The music is Generated ............")
     return generated_sequence
 
 def generated_to_midi(generated_sequence, fs=100, total_duration=6):
@@ -161,71 +160,71 @@ def midi_to_wav(midi_path, wav_path):
 
 # Define the directory options and their corresponding model paths
 composer_models = {
-    'albeniz': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/albeniz.h5',
-    'bach': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/bach.h5',
-    'balakir': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/balakir.h5',
-    'beeth':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/beeth.h5',
-    'borodin':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/borodin.h5',
-    'brahms':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/brahms.h5',
-    'burgm':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/burgm.h5',
-    'chopin':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/chopin.h5',
-    'debussy':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/debussy.h5',
-    'granados':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/granados.h5',
-    'grieg':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/grieg.h5',
-    'haydn':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/haydn.h5',
-    'liszt':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/liszt.h5',
-    'mendelssohn':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/mendelssohn.h5',
-    'mozart':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/mozart.h5',
-    'muss':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/muss.h5',
-    'schubert':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/schubert.h5',
-    'schumann':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/schumann.h5',
-    'tschai':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/tschai.h5'
+    'albeniz': models_path+'albeniz.h5',
+    'bach': models_path+'bach.h5',
+    'balakir': models_path+'balakir.h5',
+    'beeth':models_path+'beeth.h5',
+    'borodin':models_path+'borodin.h5',
+    'brahms':models_path+'brahms.h5',
+    'burgm':models_path+'burgm.h5',
+    'chopin':models_path+'chopin.h5',
+    'debussy':models_path+'debussy.h5',
+    'granados':models_path+'granados.h5',
+    'grieg':models_path+'grieg.h5',
+    'haydn':models_path+'haydn.h5',
+    'liszt':models_path+'liszt.h5',
+    'mendelssohn':models_path+'mendelssohn.h5',
+    'mozart':models_path+'mozart.h5',
+    'muss':models_path+'muss.h5',
+    'schubert':models_path+'schubert.h5',
+    'schumann':models_path+'schumann.h5',
+    'tschai':models_path+'tschai.h5'
 
 }
 
 # Define the directory options for training and prediction MIDI files
 training_midi_directory_options = {
-    'albeniz': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/albeniz',
-    'bach': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/bach',
-    'balakir': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/balakir',
-    'beeth':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/beeth',
-    'borodin':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/borodin',
-    'brahms':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/brahms',
-    'burgm':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/burgm',
-    'chopin':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/chopin',
-    'debussy':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/debussy',
-    'granados':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/granados',
-    'grieg':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/grieg',
-    'haydn':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/haydn',
-    'liszt':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/liszt',
-    'mendelssohn':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/mendelssohn',
-    'mozart':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/mozart',
-    'muss':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/muss',
-    'schubert':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/schubert',
-    'schumann':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/schumann',
-    'tschai':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/tschai'
+    'albeniz': data_path + 'albeniz',
+    'bach': data_path + 'bach',
+    'balakir': data_path + 'balakir',
+    'beeth':data_path + 'beeth',
+    'borodin':data_path + 'borodin',
+    'brahms':data_path + 'brahms',
+    'burgm':data_path + 'burgm',
+    'chopin':data_path + 'chopin',
+    'debussy':data_path + 'debussy',
+    'granados':data_path + 'granados',
+    'grieg':data_path + 'grieg',
+    'haydn':data_path + 'haydn',
+    'liszt':data_path + 'liszt',
+    'mendelssohn':data_path + 'mendelssohn',
+    'mozart':data_path + 'mozart',
+    'muss':data_path + 'muss',
+    'schubert':data_path + 'schubert',
+    'schumann':data_path + 'schumann',
+    'tschai':data_path + 'tschai'
 }
 
 prediction_midi_directory_options = {
-    'albeniz': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/albeniz',
-    'bach': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/bach',
-    'balakir': '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/balakir',
-    'beeth':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/beeth',
-    'borodin':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/borodin',
-    'brahms':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/brahms',
-    'burgm':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/burgm',
-    'chopin':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/chopin',
-    'debussy':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/debussy',
-    'granados':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/granados',
-    'grieg':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/grieg',
-    'haydn':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/haydn',
-    'liszt':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/liszt',
-    'mendelssohn':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/mendelssohn',
-    'mozart':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/mozart',
-    'muss':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/muss',
-    'schubert':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/schubert',
-    'schumann':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/schumann',
-    'tschai':'/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/archive/tschai'
+    'albeniz': data_path + 'albeniz/',
+    'bach': data_path + 'bach/',
+    'balakir': data_path + 'balakir/',
+    'beeth':data_path + 'beeth/',
+    'borodin':data_path + 'borodin/',
+    'brahms':data_path + 'brahms/',
+    'burgm':data_path + 'burgm/',
+    'chopin':data_path + 'chopin/',
+    'debussy':data_path + 'debussy/',
+    'granados':data_path + 'granados/',
+    'grieg':data_path + 'grieg/',
+    'haydn':data_path + 'haydn/',
+    'liszt':data_path + 'liszt/',
+    'mendelssohn':data_path + 'mendelssohn/',
+    'mozart':data_path + 'mozart/',
+    'muss':data_path + 'muss/',
+    'schubert':data_path + 'schubert/',
+    'schumann':data_path + 'schumann/',
+    'tschai':data_path + 'tschai/'
 }
 
 #st.markdown('<div class="center"><h1>Classical Music Generation</h1></div>', unsafe_allow_html=True)
@@ -236,11 +235,11 @@ training_directory_path = training_midi_directory_options[selected_composer_trai
 
 # Parameters for the sequence creation
 seq_length = 30  # Length of the input sequences
-vocab_size = 128  # Number of unique pitches (for MIDI, typically 128)
+vocab_size = 128  
 
 
-if st.button('Load Data'):
-    # Load training data
+if st.button('Load Model'):
+    
     training_sequences = load_midi_details(training_directory_path)
     training_input_sequences, training_target_sequences = create_input_target_sequences(training_sequences, seq_length,
                                                                                         vocab_size)
@@ -260,7 +259,7 @@ if st.button('Load Data'):
 selected_composer_prediction = st.selectbox("Select composer for prediction:", list(composer_models.keys()))
 prediction_directory_path = prediction_midi_directory_options[selected_composer_prediction]
 
-temperature = st.slider("Temperature", min_value=0.0, max_value=5.0, step=0.1)
+temperature = st.slider("Temperature", min_value=1.0, max_value=5.0, step=0.1)
 
 
 # Generate music based on the loaded model
@@ -283,9 +282,7 @@ if st.button('Generate Music'):
 
     # Convert generated sequence to MIDI
     generated_music_midi = generated_to_midi(generated_music,total_duration=15)
-    #output_path = '/Users/dishakacha/Downloads/Deep_Learning/Deep_Learing/Project/Model/generated_music.mid'
-    #generated_music_midi.write(output_path)
-    #Save the generated MIDI to a temporary file
+
     def save_midi_to_tempfile(midi_data):
         temp_path = "temp.mid"
         midi_data.write(temp_path)
