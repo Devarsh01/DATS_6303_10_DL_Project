@@ -18,10 +18,12 @@ Basic requirements based on our AWS image and server are provided in requirement
 Download the dataset that is in the zip file, And save it ou your instance.
 
 2. Open the ```act_vs_pred.py```
+
   
 - Change the directory path of the dataset as stored in your system and include the composer name on which you want your model to be trained. (line 74)
 - Change the path where you want the predicted midi file to be generated. (line 194)
 - Same way change the path for actual music. (line 207)
+
 
   ```python3 act_vs_pred.py```
 
