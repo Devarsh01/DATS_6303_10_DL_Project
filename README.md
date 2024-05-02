@@ -47,7 +47,7 @@ This code will get you a predicted music based on tempo changes as in, 2 or 3 no
 
 Run the stearmlit command
 
-```python3 -m streamlit run Python_Streamlit.py --server.port:8888```
+```python3 -m streamlit run Project_Streamlit.py --server.port 8888```
 
 This command will open the streamlit app for you.
 ```{localhost}:8888```  (where localhost is your AWS IP)
