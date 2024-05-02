@@ -53,3 +53,8 @@ This command will open the streamlit app for you.
 ```{localhost}:8888```  (where localhost is your AWS IP)
 
 
+Note: if the app throws an error for FluidSynth
+
+Try updating the ```midi2audio``` -----   ```pip install --upgrade midi2audio```
+
+
