@@ -57,12 +57,11 @@ def build_model(seq_length, vocab_size, embedding_dim):
     # Embedding layer: Converts input sequence of token indices to sequences of vectors
     x = Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=seq_length)(inputs)
 
-    # LSTM layer: You can stack more LSTM layers or adjust the number of units
-    x = LSTM(units=256, return_sequences=True)(x)  # return_sequences=True if next layer is also RNN
+    x = LSTM(units=256, return_sequences=True)(x)  # return_sequences=True since the next layer is also RNN
     x = LSTM(units=256)(x)  # Last LSTM layer does not return sequences
 
     # Output layer: Linear layer (Dense) with 'vocab_size' units to predict the next pitch
-    outputs = Dense(vocab_size, activation='softmax')(x)  # Using softmax for output distribution
+    outputs = Dense(vocab_size, activation='softmax')(x)  # Using softmax for output distribution (With temperature implemented later on to sample notes)
 
     # Create and compile model
     model = Model(inputs=inputs, outputs=outputs)
@@ -77,7 +76,7 @@ directory = '/home/ubuntu/Devarsh_DL/Project/DL_Dataset/bach/'
 
 seq_length = 30  # Length of the input sequences
 vocab_size = 128  # Number of unique pitches (for MIDI, typically 128)
-embedding_dim = 100 # Define the length of sequences for input and target
+embedding_dim = 100 # Defining the embedding layer dimension
 sequences = load_midi_details(directory)
 input_sequences, target_sequences = create_input_target_sequences(sequences, seq_length)
 
@@ -91,31 +90,6 @@ model.summary()
 model.fit(input_sequences, target_sequences, epochs=50, batch_size=32)
 
 #%%
-# def generate_music(model, seed_sequence, length=10, steps_per_second=5):
-#     """Generate music from a seed sequence aiming for a total duration."""
-#     # Ensure the seed sequence is of the correct length
-#
-#     generated_sequence = np.copy(seed_sequence)  # Copy to avoid modifying the original seed
-#     total_steps = length * steps_per_second  # Total steps needed for desired duration
-#     # print(f"Total steps to generate: {total_steps}")
-#
-#     for _ in range(total_steps):
-#         # Predict the next step using the last 'seq_length' elements in the generated_sequence
-#         prediction = model.predict(np.expand_dims(generated_sequence[-seq_length:], axis=0))[0]
-#         # print('Prediction vector:', prediction)
-#
-#         # Select the pitch with the highest probability
-#         predicted_pitch = np.argmax(prediction)
-#         # print('Predicted pitch:', predicted_pitch)
-#
-#         # Normalize the predicted pitch and reshape for stacking
-#         # normalized_pitch = np.array([[predicted_pitch / 127]])
-#
-#         # Append the normalized pitch to the generated sequence
-#         generated_sequence = np.vstack([generated_sequence, predicted_pitch])
-#         # print('Updated generated sequence:', generated_sequence)
-#     print("This is damnn great generation!!!", generated_sequence[-30:])
-#     return generated_sequence
 
 def generate_music(model, seed_sequence, length=10, steps_per_second=5, temperature=1):
     """Generate music from a seed sequence aiming for a total duration using a temperature parameter."""
@@ -179,13 +153,8 @@ def generated_to_midi(generated_sequence, fs=100, total_duration=6):
     print("The generated MIDI")
     return pm
 
-# Assuming you have a trained model and a seed sequence
-# seed_pitches = np.array([60, 62, 64, 65, 67, 61, 45, 55, 47, 68])  # Example MIDI pitches
 seed=1000
 seed_pitches = input_sequences[seed]
-# Normalize the pitches and reshape for model input
-# Normalize by dividing by the maximum MIDI pitch value (127)
-# Reshape to match expected model input shape (n, 1)
 seed_sequence = (seed_pitches).reshape(-1, 1)  # Reshape to (n, 1)
 
 # Call the generate_music function with the reshaped and normalized seed sequence
