@@ -37,6 +37,19 @@ This code will get you a predicted music based on tempo changes as in, 2 or 3 no
 
 ```python3 Music with Tempo Categorical.py```
 
+4. Open the ```Project_Streamlit.py```
 
+   This code will help you build the streamlit app
+
+- Change the root_path as set in your directory and where you have the whole project cloned. (line 18)
+- Download all the models, thatw e have provided in the github under the folder models, and store them inside ```the root_path/models/...``` 
+- Same way download the data files (DL_Dataset.zip) and unzip it and put all the composers in it inside the ```root_path/Data Sources/```
+
+Run the stearmlit command
+
+```python3 -m streamlit run Python_Streamlit.py --server.port:8888```
+
+This command will open the streamlit app for you.
+```{localhost}:8888```  (where localhost is your AWS IP)
 
 
